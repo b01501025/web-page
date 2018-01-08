@@ -1,31 +1,30 @@
 <html>
-<head>
-	<title="VisPractice"></title>
-	<meta charset="utf-8">
-	<script src="https://d3js.org/d3.v3.min.js"></script>
-	<script>
-		
-		function Yourname(hi){
-
-			var canvas = d3.select("body").append("svg").attr("width", 800).attr("height", 400);
-			
-			var spaceForData = canvas.selectAll("circle").data(hi).enter();
-			
-			canvas.append("text").text("LAB3").attr("x", 350).attr("y", 15);
-			
-			spaceForData.append("circle").attr({
-			//d = [{"Age":"~10", "Male":833, "Female":625}, {...}, ...]
-				"cx": function(d){return 350 + d.Male/100},
-				"cy": function(d, n){return n*20 + 50},
-				"r": "10px",
-			})
-		}
-		d3.csv("./death.95.csv", Yourname)
-		
-	</script>
-</head>
-<body>
-	<p>yoyo</p>
-	<p>check it out</p>
-</body>
+  <head>
+    <script src='https://cdn.firebase.com/js/client/1.0.17/firebase.js'></script>
+    <script src='https://ajax.googleapis.com/ajax/libs/jquery/1.9.0/jquery.min.js'></script>
+  </head>
+  <body>
+    <div id='messagesDiv'></div>
+    <input type='text' id='nameInput' placeholder='Name'>
+    <input type='text' id='messageInput' placeholder='Message'>
+    <script>
+      var myDataRef = new Firebase('https://pythonsenddatatry.firebaseio.com/');
+      $('#messageInput').keypress(function (e) {
+        if (e.keyCode == 13) {
+          var name = $('#nameInput').val();
+          var text = $('#messageInput').val();
+          myDataRef.push({name: name, text: text});
+          $('#messageInput').val('');
+        }
+      });
+      myDataRef.on('child_added', function(snapshot) {
+        var message = snapshot.val();
+    displayChatMessage(message.name, message.text);
+      });
+      function displayChatMessage(name, text) {
+        $('<div/>').text(text).prepend($('<em/>').text(name+': ')).appendTo($('#messagesDiv'));
+        $('#messagesDiv')[0].scrollTop = $('#messagesDiv')[0].scrollHeight;
+      };
+    </script>
+  </body>
 </html>
